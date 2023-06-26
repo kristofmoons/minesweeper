@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minesweeper/numberbox.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -8,6 +9,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int numberOfSquares = 9 * 9;
+  int numberInEachRow = 9;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,18 +59,17 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: GridView.builder(
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: 25,
+                itemCount: numberOfSquares,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 5),
+                    crossAxisCount: numberInEachRow),
                 itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Container(
-                      color: Colors.blue,
-                    ),
-                  );
+                  return MyNumberBox();
                 }),
-          )
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: Text('Created by: Kristof Moons'),
+          ),
         ],
       ),
     );
