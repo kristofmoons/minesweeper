@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class MyNumberBox extends StatelessWidget {
   final child;
-  bool revealed;
-  final function;
+  final bool revealed;
+  final VoidCallback? function;
 
   MyNumberBox({this.child, required this.revealed, this.function});
 
@@ -12,14 +12,26 @@ class MyNumberBox extends StatelessWidget {
     return GestureDetector(
       onTap: function,
       child: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Container(
-            color: revealed ? Colors.grey[300] : Colors.grey[400],
-            child: Center(
-                child: Text(
-              revealed ? child.toString() : '',
-            )),
-          )),
+        padding: const EdgeInsets.all(2.0),
+        child: Container(
+          color: revealed ? Colors.grey[300] : Colors.grey[400],
+          child: Center(
+            child: Text(
+              revealed ? (child == 0 ? '' : child.toString()) : '',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: child == 1
+                    ? Colors.blue
+                    : child == 2
+                        ? Colors.green
+                        : child == 3
+                            ? Colors.red
+                            : Colors.black,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
