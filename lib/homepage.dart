@@ -30,6 +30,15 @@ class _HomePageState extends State<HomePage> {
     scanBombs();
   }
 
+  void restartGame() {
+    setState(() {
+      bombRevealed = false;
+      for (int i = 0; i < numberOfSquares; i++) {
+        squareStatus[i][1] = false;
+      }
+    });
+  }
+
   void revealBoxNumbers(int index) {
     // box has number
     if (squareStatus[index][0] != 0) {
@@ -133,6 +142,33 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void playerLost() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.grey[700],
+            title: Center(
+              child: Text(
+                'You lost!',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            actions: [
+              MaterialButton(
+                color: Colors.grey[100],
+                onPressed: () {
+                  restartGame();
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.refresh),
+              )
+            ],
+          );
+        });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
@@ -148,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "6",
+                        bombLocation.length.toString(),
                         style: TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
@@ -159,7 +195,13 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  Icon(Icons.refresh, color: Colors.white, size: 50),
+                  GestureDetector(
+                    onTap: restartGame,
+                    child: Card(
+                      child: Icon(Icons.refresh, color: Colors.white, size: 50),
+                      color: Colors.grey[700],
+                    ),
+                  ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -191,6 +233,7 @@ class _HomePageState extends State<HomePage> {
                         setState(() {
                           bombRevealed = true;
                         });
+                        playerLost();
                       },
                     );
                   } else {
