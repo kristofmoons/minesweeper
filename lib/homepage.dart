@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minesweeper/bomb.dart';
 import 'package:minesweeper/numberbox.dart';
+import 'dart:math';
 
 /// The home page of the Minesweeper game.
 class HomePage extends StatefulWidget {
@@ -14,14 +15,7 @@ class _HomePageState extends State<HomePage> {
   int numberOfSquares = 9 * 9;
   int numberInEachRow = 9;
   var squareStatus = [];
-  final List<int> bombLocation = [
-    4,
-    40,
-    60,
-    62,
-    61,
-    58,
-  ];
+  List<int> bombLocation = [];
   bool bombRevealed = false;
 
   @override
@@ -32,7 +26,32 @@ class _HomePageState extends State<HomePage> {
     for (int i = 0; i < numberOfSquares; i++) {
       squareStatus.add([0, false]);
     }
+
+    // Generate random bomb locations
+    bombLocation = generateRandomBombLocations(
+        numberOfBombs: 6, totalBoxes: numberOfSquares);
+
     scanBombs();
+  }
+
+  // Generate a random list of bomb locations
+  List<int> generateRandomBombLocations(
+      {required int numberOfBombs, required int totalBoxes}) {
+    List<int> bombLocations = [];
+
+    // Create a random number generator
+    Random random = Random();
+
+    while (bombLocations.length < numberOfBombs) {
+      int randomLocation = random.nextInt(totalBoxes);
+
+      // Ensure the random location is not already in the bombLocations list
+      if (!bombLocations.contains(randomLocation)) {
+        bombLocations.add(randomLocation);
+      }
+    }
+
+    return bombLocations;
   }
 
   /// Restarts the game by resetting the state.
