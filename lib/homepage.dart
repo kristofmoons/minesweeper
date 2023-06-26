@@ -168,6 +168,45 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
+  void playerWon() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.grey[700],
+            title: Center(
+              child: Text(
+                'You won!',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            actions: [
+              MaterialButton(
+                color: Colors.grey[100],
+                onPressed: () {
+                  restartGame();
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.refresh),
+              )
+            ],
+          );
+        });
+  }
+
+  void checkWinner() {
+    int unrevealedBoxes = 0;
+    for (int i = 0; i < numberOfSquares; i++) {
+      if (!squareStatus[i][1]) {
+        unrevealedBoxes++;
+      }
+    }
+
+    if (unrevealedBoxes == bombLocation.length) {
+      playerWon();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -242,6 +281,7 @@ class _HomePageState extends State<HomePage> {
                       revealed: squareStatus[index][1],
                       function: () {
                         revealBoxNumbers(index);
+                        checkWinner();
                       },
                     );
                   }
