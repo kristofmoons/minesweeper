@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   if (bombLocation.contains(index)) {
                     return MyBomb(
-                      child: index,
+                      child: 'x',
                       revealed: squareStatus[index][1],
                     );
                   } else {
