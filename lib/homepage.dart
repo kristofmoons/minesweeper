@@ -54,13 +54,24 @@ class _HomePageState extends State<HomePage> {
     return bombLocations;
   }
 
-  /// Restarts the game by resetting the state.
+  /// Restarts the game by resetting the state and regenerating bomb locations.
   void restartGame() {
     setState(() {
       bombRevealed = false;
+
+      // Clear square status
+      squareStatus.clear();
+
+      // Initialize square status
       for (int i = 0; i < numberOfSquares; i++) {
-        squareStatus[i][1] = false;
+        squareStatus.add([0, false]);
       }
+
+      // Generate random bomb locations
+      bombLocation = generateRandomBombLocations(
+          numberOfBombs: 6, totalBoxes: numberOfSquares);
+
+      scanBombs();
     });
   }
 
