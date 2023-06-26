@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class MyNumberBox extends StatelessWidget {
+class MyBomb extends StatelessWidget {
   final child;
 
-  MyNumberBox({this.child});
+  MyBomb({this.child});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.all(2.0),
         child: Container(
-          color: Colors.grey[400],
+          color: Colors.grey[800],
           child: Center(child: Text(child.toString())),
         ));
   }

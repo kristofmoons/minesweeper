@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minesweeper/bomb.dart';
 import 'package:minesweeper/numberbox.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,7 +12,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int numberOfSquares = 9 * 9;
   int numberInEachRow = 9;
+  var squareStatus = [];
+  final List<int> bombLocation = [
+    4,
+    40,
+    61,
+  ];
   @override
+  void initState() {
+    super.initState();
+
+    for (int i = 0; i < numberOfSquares; i++) {
+      squareStatus.add([0, false]);
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
@@ -63,7 +78,15 @@ class _HomePageState extends State<HomePage> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: numberInEachRow),
                 itemBuilder: (context, index) {
-                  return MyNumberBox();
+                  if (bombLocation.contains(index)) {
+                    return MyBomb(
+                      child: index,
+                    );
+                  } else {
+                    return MyNumberBox(
+                      child: index,
+                    );
+                  }
                 }),
           ),
           Padding(
