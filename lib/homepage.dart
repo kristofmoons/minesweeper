@@ -31,9 +31,48 @@ class _HomePageState extends State<HomePage> {
   }
 
   void revealBoxNumbers(int index) {
-    setState(() {
-      squareStatus[index][1] = true;
-    });
+    // box has number
+    if (squareStatus[index][0] != 0) {
+      setState(() {
+        squareStatus[index][1] = true;
+      });
+    }
+    // box has no number
+    else if (squareStatus[index][0] == 0) {
+      setState(() {
+        squareStatus[index][1] = true;
+        if (index % numberInEachRow != 0) {
+          if (squareStatus[index - 1][0] == 0 && !squareStatus[index - 1][1]) {
+            revealBoxNumbers(index - 1);
+          } else {
+            squareStatus[index - 1][1] = true;
+          }
+        }
+        if ((index + 1) % numberInEachRow != 0) {
+          if (squareStatus[index + 1][0] == 0 && !squareStatus[index + 1][1]) {
+            revealBoxNumbers(index + 1);
+          } else {
+            squareStatus[index + 1][1] = true;
+          }
+        }
+        if (index >= numberInEachRow) {
+          if (squareStatus[index - numberInEachRow][0] == 0 &&
+              !squareStatus[index - numberInEachRow][1]) {
+            revealBoxNumbers(index - numberInEachRow);
+          } else {
+            squareStatus[index - numberInEachRow][1] = true;
+          }
+        }
+        if (index < numberOfSquares - numberInEachRow) {
+          if (squareStatus[index + numberInEachRow][0] == 0 &&
+              !squareStatus[index + numberInEachRow][1]) {
+            revealBoxNumbers(index + numberInEachRow);
+          } else {
+            squareStatus[index + numberInEachRow][1] = true;
+          }
+        }
+      });
+    }
   }
 
   void scanBombs() {
