@@ -13,8 +13,7 @@ class MyBomb extends StatelessWidget {
       child: Padding(
           padding: const EdgeInsets.all(2.0),
           child: Container(
-            color: Colors.grey[800],
-            child: Center(child: Text('x')),
+            color: revealed ? Colors.red[800] : Colors.grey[400],
           )),
     );
   }

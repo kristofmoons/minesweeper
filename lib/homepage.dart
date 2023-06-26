@@ -18,6 +18,8 @@ class _HomePageState extends State<HomePage> {
     40,
     61,
   ];
+  bool bombRevealed = false;
+
   @override
   void initState() {
     super.initState();
@@ -145,8 +147,12 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   if (bombLocation.contains(index)) {
                     return MyBomb(
-                      child: 'x',
-                      revealed: squareStatus[index][1],
+                      revealed: bombRevealed,
+                      function: () {
+                        setState(() {
+                          bombRevealed = true;
+                        });
+                      },
                     );
                   } else {
                     return MyNumberBox(
