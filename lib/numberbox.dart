@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 
+/// Widget representing a number box.
 class MyNumberBox extends StatelessWidget {
+  /// The child content of the box.
   final child;
+
+  /// Flag indicating whether the box is revealed.
   final bool revealed;
+
+  /// Callback function to be executed on tap.
   final VoidCallback? function;
 
+  /// Constructs a MyNumberBox instance.
+  ///
+  /// The [child] parameter represents the child content of the box.
+  /// The [revealed] parameter indicates whether the box is revealed.
+  /// The [function] parameter is an optional callback function to be executed on tap.
   MyNumberBox({this.child, required this.revealed, this.function});
 
   @override
