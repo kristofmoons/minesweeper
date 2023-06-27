@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:minesweeper/bomb.dart';
 import 'package:minesweeper/numberbox.dart';
 import 'dart:math';
+import 'timer.dart';
 
 /// The home page of the Minesweeper game.
 class HomePage extends StatefulWidget {
@@ -299,11 +300,7 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "6",
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    ),
+                    TimerWidget(), // Add the TimerWidget here
                     Text(
                       "TIME",
                       style:
