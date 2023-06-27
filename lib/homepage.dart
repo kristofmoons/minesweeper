@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   bool bombRevealed = false;
   int secondsElapsed = 0;
   Timer? timer;
+  bool flagButtonTapped = false;
 
   @override
   void initState() {
@@ -323,12 +324,39 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                // Restart Button
+                // Settings Icon
+                GestureDetector(
+                  onTap: () {
+                    // Add your settings functionality here
+                  },
+                  child: Card(
+                    child: Icon(Icons.settings, color: Colors.white, size: 50),
+                    color: Colors.grey[700],
+                  ),
+                ),
+                // Refresh Button
                 GestureDetector(
                   onTap: restartGame,
                   child: Card(
                     child: Icon(Icons.refresh, color: Colors.white, size: 50),
                     color: Colors.grey[700],
+                  ),
+                ),
+                // Flag Icon
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      flagButtonTapped =
+                          !flagButtonTapped; // Toggle the tapped state
+                    });
+                    // Add your flag functionality here
+                  },
+                  child: Card(
+                    child: Icon(Icons.flag, color: Colors.white, size: 50),
+                    color: flagButtonTapped
+                        ? Colors.green
+                        : Colors.grey[
+                            700], // Set background color based on tapped state
                   ),
                 ),
                 // Time Counter
