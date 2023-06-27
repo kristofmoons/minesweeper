@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:minesweeper/bomb.dart';
 import 'package:minesweeper/numberbox.dart';
+import 'dart:async';
 import 'dart:math';
-import 'timer.dart';
 
-/// The home page of the Minesweeper game.
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -18,6 +17,8 @@ class _HomePageState extends State<HomePage> {
   var squareStatus = [];
   List<int> bombLocation = [];
   bool bombRevealed = false;
+  int secondsElapsed = 0;
+  Timer? timer;
 
   @override
   void initState() {
@@ -30,14 +31,27 @@ class _HomePageState extends State<HomePage> {
 
     // Generate random bomb locations
     bombLocation = generateRandomBombLocations(
-        numberOfBombs: 6, totalBoxes: numberOfSquares);
+      numberOfBombs: 6,
+      totalBoxes: numberOfSquares,
+    );
 
     scanBombs();
+
+    // Start the timer
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   // Generate a random list of bomb locations
-  List<int> generateRandomBombLocations(
-      {required int numberOfBombs, required int totalBoxes}) {
+  List<int> generateRandomBombLocations({
+    required int numberOfBombs,
+    required int totalBoxes,
+  }) {
     List<int> bombLocations = [];
 
     // Create a random number generator
@@ -70,9 +84,30 @@ class _HomePageState extends State<HomePage> {
 
       // Generate random bomb locations
       bombLocation = generateRandomBombLocations(
-          numberOfBombs: 6, totalBoxes: numberOfSquares);
+        numberOfBombs: 6,
+        totalBoxes: numberOfSquares,
+      );
 
       scanBombs();
+
+      // Reset the timer
+      resetTimer();
+    });
+  }
+
+  /// Resets the timer to 0 seconds.
+  void resetTimer() {
+    setState(() {
+      secondsElapsed = 0;
+    });
+  }
+
+  /// Starts the timer.
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      setState(() {
+        secondsElapsed++;
+      });
     });
   }
 
@@ -300,9 +335,13 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TimerWidget(), // Add the TimerWidget here
                     Text(
-                      "TIME",
+                      '${secondsElapsed ~/ 60}:${(secondsElapsed % 60).toString().padLeft(2, '0')}',
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'TIME',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
