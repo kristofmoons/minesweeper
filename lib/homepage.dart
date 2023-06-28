@@ -16,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   int numberInEachRow = 9;
   var squareStatus = [];
   List<int> bombLocation = [];
+  List<bool> flaggedSquares = [];
   bool bombRevealed = false;
   int secondsElapsed = 0;
   Timer? timer;
@@ -28,6 +29,7 @@ class _HomePageState extends State<HomePage> {
     // Initialize square status
     for (int i = 0; i < numberOfSquares; i++) {
       squareStatus.add([0, false]);
+      flaggedSquares.add(false);
     }
 
     // Generate random bomb locations
@@ -114,53 +116,66 @@ class _HomePageState extends State<HomePage> {
 
   /// Reveals the numbers in the neighboring boxes recursively based on the selected box index.
   void revealBoxNumbers(int index) {
-    // If the box has a number, mark it as revealed
-    if (squareStatus[index][0] != 0) {
-      setState(() {
-        squareStatus[index][1] = true;
-      });
+// Skip revealing if the square is flagged
+    if (flaggedSquares[index]) {
+      return;
     }
-    // If the box has no number, reveal it and recursively reveal neighboring boxes
-    else if (squareStatus[index][0] == 0) {
+// If the flag button is tapped, toggle the flag state of the square
+    if (flagButtonTapped) {
       setState(() {
-        squareStatus[index][1] = true;
-
-        // Reveal neighboring boxes in all four directions (left, right, top, bottom)
-        if (index % numberInEachRow != 0) {
-          // Check and reveal the box to the left
-          if (squareStatus[index - 1][0] == 0 && !squareStatus[index - 1][1]) {
-            revealBoxNumbers(index - 1);
-          } else {
-            squareStatus[index - 1][1] = true;
-          }
-        }
-        if ((index + 1) % numberInEachRow != 0) {
-          // Check and reveal the box to the right
-          if (squareStatus[index + 1][0] == 0 && !squareStatus[index + 1][1]) {
-            revealBoxNumbers(index + 1);
-          } else {
-            squareStatus[index + 1][1] = true;
-          }
-        }
-        if (index >= numberInEachRow) {
-          // Check and reveal the box above
-          if (squareStatus[index - numberInEachRow][0] == 0 &&
-              !squareStatus[index - numberInEachRow][1]) {
-            revealBoxNumbers(index - numberInEachRow);
-          } else {
-            squareStatus[index - numberInEachRow][1] = true;
-          }
-        }
-        if (index < numberOfSquares - numberInEachRow) {
-          // Check and reveal the box below
-          if (squareStatus[index + numberInEachRow][0] == 0 &&
-              !squareStatus[index + numberInEachRow][1]) {
-            revealBoxNumbers(index + numberInEachRow);
-          } else {
-            squareStatus[index + numberInEachRow][1] = true;
-          }
-        }
+        flaggedSquares[index] = !flaggedSquares[index];
       });
+    } else {
+      // If the box has a number, mark it as revealed
+      if (squareStatus[index][0] != 0) {
+        setState(() {
+          squareStatus[index][1] = true;
+        });
+      }
+      // If the box has no number, reveal it and recursively reveal neighboring boxes
+      else if (squareStatus[index][0] == 0) {
+        setState(() {
+          squareStatus[index][1] = true;
+
+          // Reveal neighboring boxes in all four directions (left, right, top, bottom)
+          if (index % numberInEachRow != 0) {
+            // Check and reveal the box to the left
+            if (squareStatus[index - 1][0] == 0 &&
+                !squareStatus[index - 1][1]) {
+              revealBoxNumbers(index - 1);
+            } else {
+              squareStatus[index - 1][1] = true;
+            }
+          }
+          if ((index + 1) % numberInEachRow != 0) {
+            // Check and reveal the box to the right
+            if (squareStatus[index + 1][0] == 0 &&
+                !squareStatus[index + 1][1]) {
+              revealBoxNumbers(index + 1);
+            } else {
+              squareStatus[index + 1][1] = true;
+            }
+          }
+          if (index >= numberInEachRow) {
+            // Check and reveal the box above
+            if (squareStatus[index - numberInEachRow][0] == 0 &&
+                !squareStatus[index - numberInEachRow][1]) {
+              revealBoxNumbers(index - numberInEachRow);
+            } else {
+              squareStatus[index - numberInEachRow][1] = true;
+            }
+          }
+          if (index < numberOfSquares - numberInEachRow) {
+            // Check and reveal the box below
+            if (squareStatus[index + numberInEachRow][0] == 0 &&
+                !squareStatus[index + numberInEachRow][1]) {
+              revealBoxNumbers(index + numberInEachRow);
+            } else {
+              squareStatus[index + numberInEachRow][1] = true;
+            }
+          }
+        });
+      }
     }
   }
 
@@ -404,6 +419,7 @@ class _HomePageState extends State<HomePage> {
                   return MyNumberBox(
                     child: squareStatus[index][0],
                     revealed: squareStatus[index][1],
+                    flagged: flaggedSquares[index],
                     function: () {
                       revealBoxNumbers(index);
                       checkWinner();
