@@ -408,7 +408,9 @@ class _HomePageState extends State<HomePage> {
                 crossAxisCount: numberInEachRow,
               ),
               itemBuilder: (context, index) {
-                if (bombLocation.contains(index)) {
+                if (bombLocation.contains(index) &&
+                    !flagButtonTapped &&
+                    !flaggedSquares[index]) {
                   // Render Bomb Box
                   return MyBomb(
                     revealed: bombRevealed,
