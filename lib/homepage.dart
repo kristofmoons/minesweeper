@@ -347,7 +347,26 @@ class _HomePageState extends State<HomePage> {
                 // Settings Icon
                 GestureDetector(
                   onTap: () {
-                    // Add your settings functionality here
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Settings'),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context); // Close the dialog
+                                },
+                                child: Icon(Icons.close),
+                              ),
+                            ],
+                          ),
+                          // Add your settings content here
+                        );
+                      },
+                    );
                   },
                   child: Card(
                     child: Icon(Icons.settings, color: Colors.white, size: 50),
