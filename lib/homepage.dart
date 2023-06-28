@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:minesweeper/bomb.dart';
 import 'package:minesweeper/numberbox.dart';
+import 'dart:async';
 import 'dart:math';
 
-/// The home page of the Minesweeper game.
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -16,7 +16,11 @@ class _HomePageState extends State<HomePage> {
   int numberInEachRow = 9;
   var squareStatus = [];
   List<int> bombLocation = [];
+  List<bool> flaggedSquares = [];
   bool bombRevealed = false;
+  int secondsElapsed = 0;
+  Timer? timer;
+  bool flagButtonTapped = false;
 
   @override
   void initState() {
@@ -25,18 +29,32 @@ class _HomePageState extends State<HomePage> {
     // Initialize square status
     for (int i = 0; i < numberOfSquares; i++) {
       squareStatus.add([0, false]);
+      flaggedSquares.add(false);
     }
 
     // Generate random bomb locations
     bombLocation = generateRandomBombLocations(
-        numberOfBombs: 6, totalBoxes: numberOfSquares);
+      numberOfBombs: 6,
+      totalBoxes: numberOfSquares,
+    );
 
     scanBombs();
+
+    // Start the timer
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   // Generate a random list of bomb locations
-  List<int> generateRandomBombLocations(
-      {required int numberOfBombs, required int totalBoxes}) {
+  List<int> generateRandomBombLocations({
+    required int numberOfBombs,
+    required int totalBoxes,
+  }) {
     List<int> bombLocations = [];
 
     // Create a random number generator
@@ -69,61 +87,100 @@ class _HomePageState extends State<HomePage> {
 
       // Generate random bomb locations
       bombLocation = generateRandomBombLocations(
-          numberOfBombs: 6, totalBoxes: numberOfSquares);
+        numberOfBombs: 6,
+        totalBoxes: numberOfSquares,
+      );
+
+      flaggedSquares = List.filled(numberOfSquares, false);
 
       scanBombs();
+
+      // Reset the timer
+      resetTimer();
+    });
+  }
+
+  /// Resets the timer to 0 seconds.
+  void resetTimer() {
+    setState(() {
+      secondsElapsed = 0;
+    });
+  }
+
+  /// Starts the timer.
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      setState(() {
+        secondsElapsed++;
+      });
     });
   }
 
   /// Reveals the numbers in the neighboring boxes recursively based on the selected box index.
   void revealBoxNumbers(int index) {
-    // If the box has a number, mark it as revealed
-    if (squareStatus[index][0] != 0) {
+// Skip revealing if the square is flagged
+    if (flaggedSquares[index]) {
       setState(() {
-        squareStatus[index][1] = true;
+        flaggedSquares[index] = false;
       });
+      return;
     }
-    // If the box has no number, reveal it and recursively reveal neighboring boxes
-    else if (squareStatus[index][0] == 0) {
+// If the flag button is tapped, toggle the flag state of the square
+    if (flagButtonTapped) {
       setState(() {
-        squareStatus[index][1] = true;
-
-        // Reveal neighboring boxes in all four directions (left, right, top, bottom)
-        if (index % numberInEachRow != 0) {
-          // Check and reveal the box to the left
-          if (squareStatus[index - 1][0] == 0 && !squareStatus[index - 1][1]) {
-            revealBoxNumbers(index - 1);
-          } else {
-            squareStatus[index - 1][1] = true;
-          }
-        }
-        if ((index + 1) % numberInEachRow != 0) {
-          // Check and reveal the box to the right
-          if (squareStatus[index + 1][0] == 0 && !squareStatus[index + 1][1]) {
-            revealBoxNumbers(index + 1);
-          } else {
-            squareStatus[index + 1][1] = true;
-          }
-        }
-        if (index >= numberInEachRow) {
-          // Check and reveal the box above
-          if (squareStatus[index - numberInEachRow][0] == 0 &&
-              !squareStatus[index - numberInEachRow][1]) {
-            revealBoxNumbers(index - numberInEachRow);
-          } else {
-            squareStatus[index - numberInEachRow][1] = true;
-          }
-        }
-        if (index < numberOfSquares - numberInEachRow) {
-          // Check and reveal the box below
-          if (squareStatus[index + numberInEachRow][0] == 0 &&
-              !squareStatus[index + numberInEachRow][1]) {
-            revealBoxNumbers(index + numberInEachRow);
-          } else {
-            squareStatus[index + numberInEachRow][1] = true;
-          }
-        }
+        flaggedSquares[index] = !flaggedSquares[index];
       });
+    } else {
+      // If the box has a number, mark it as revealed
+      if (squareStatus[index][0] != 0) {
+        setState(() {
+          squareStatus[index][1] = true;
+        });
+      }
+      // If the box has no number, reveal it and recursively reveal neighboring boxes
+      else if (squareStatus[index][0] == 0) {
+        setState(() {
+          squareStatus[index][1] = true;
+
+          // Reveal neighboring boxes in all four directions (left, right, top, bottom)
+          if (index % numberInEachRow != 0) {
+            // Check and reveal the box to the left
+            if (squareStatus[index - 1][0] == 0 &&
+                !squareStatus[index - 1][1]) {
+              revealBoxNumbers(index - 1);
+            } else {
+              squareStatus[index - 1][1] = true;
+            }
+          }
+          if ((index + 1) % numberInEachRow != 0) {
+            // Check and reveal the box to the right
+            if (squareStatus[index + 1][0] == 0 &&
+                !squareStatus[index + 1][1]) {
+              revealBoxNumbers(index + 1);
+            } else {
+              squareStatus[index + 1][1] = true;
+            }
+          }
+          if (index >= numberInEachRow) {
+            // Check and reveal the box above
+            if (squareStatus[index - numberInEachRow][0] == 0 &&
+                !squareStatus[index - numberInEachRow][1]) {
+              revealBoxNumbers(index - numberInEachRow);
+            } else {
+              squareStatus[index - numberInEachRow][1] = true;
+            }
+          }
+          if (index < numberOfSquares - numberInEachRow) {
+            // Check and reveal the box below
+            if (squareStatus[index + numberInEachRow][0] == 0 &&
+                !squareStatus[index + numberInEachRow][1]) {
+              revealBoxNumbers(index + numberInEachRow);
+            } else {
+              squareStatus[index + numberInEachRow][1] = true;
+            }
+          }
+        });
+      }
     }
   }
 
@@ -287,7 +344,17 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                // Restart Button
+                // Settings Icon
+                GestureDetector(
+                  onTap: () {
+                    // Add your settings functionality here
+                  },
+                  child: Card(
+                    child: Icon(Icons.settings, color: Colors.white, size: 50),
+                    color: Colors.grey[700],
+                  ),
+                ),
+                // Refresh Button
                 GestureDetector(
                   onTap: restartGame,
                   child: Card(
@@ -295,17 +362,34 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey[700],
                   ),
                 ),
+                // Flag Icon
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      flagButtonTapped =
+                          !flagButtonTapped; // Toggle the tapped state
+                    });
+                    // Add your flag functionality here
+                  },
+                  child: Card(
+                    child: Icon(Icons.flag, color: Colors.white, size: 50),
+                    color: flagButtonTapped
+                        ? Colors.green
+                        : Colors.grey[
+                            700], // Set background color based on tapped state
+                  ),
+                ),
                 // Time Counter
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "6",
+                      '${secondsElapsed ~/ 60}:${(secondsElapsed % 60).toString().padLeft(2, '0')}',
                       style:
                           TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "TIME",
+                      'TIME',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
@@ -324,7 +408,9 @@ class _HomePageState extends State<HomePage> {
                 crossAxisCount: numberInEachRow,
               ),
               itemBuilder: (context, index) {
-                if (bombLocation.contains(index)) {
+                if (bombLocation.contains(index) &&
+                    !flagButtonTapped &&
+                    !flaggedSquares[index]) {
                   // Render Bomb Box
                   return MyBomb(
                     revealed: bombRevealed,
@@ -340,6 +426,7 @@ class _HomePageState extends State<HomePage> {
                   return MyNumberBox(
                     child: squareStatus[index][0],
                     revealed: squareStatus[index][1],
+                    flagged: flaggedSquares[index],
                     function: () {
                       revealBoxNumbers(index);
                       checkWinner();
