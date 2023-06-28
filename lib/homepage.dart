@@ -91,6 +91,8 @@ class _HomePageState extends State<HomePage> {
         totalBoxes: numberOfSquares,
       );
 
+      flaggedSquares = List.filled(numberOfSquares, false);
+
       scanBombs();
 
       // Reset the timer
@@ -118,6 +120,9 @@ class _HomePageState extends State<HomePage> {
   void revealBoxNumbers(int index) {
 // Skip revealing if the square is flagged
     if (flaggedSquares[index]) {
+      setState(() {
+        flaggedSquares[index] = false;
+      });
       return;
     }
 // If the flag button is tapped, toggle the flag state of the square
