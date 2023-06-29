@@ -4,6 +4,12 @@ import 'package:minesweeper/numberbox.dart';
 import 'dart:async';
 import 'dart:math';
 
+enum Difficulty {
+  easy,
+  medium,
+  hard,
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -21,6 +27,8 @@ class _HomePageState extends State<HomePage> {
   int secondsElapsed = 0;
   Timer? timer;
   bool flagButtonTapped = false;
+  Difficulty currentDifficulty = Difficulty.easy;
+  int numberOfBombs = 6;
 
   @override
   void initState() {
@@ -315,6 +323,27 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void onDifficultySelected(Difficulty difficulty) {
+    setState(() {
+      currentDifficulty = difficulty;
+      switch (difficulty) {
+        case Difficulty.easy:
+          numberOfBombs = 6;
+          break;
+        case Difficulty.medium:
+          numberOfBombs = 12;
+          break;
+        case Difficulty.hard:
+          numberOfBombs = 20;
+          break;
+      }
+      bombLocation = generateRandomBombLocations(
+        numberOfBombs: numberOfBombs,
+        totalBoxes: numberOfSquares,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -363,7 +392,45 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          // Add your settings content here
+                          content: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Difficulty:',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(height: 8),
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Handle Easy difficulty selection
+                                },
+                                child: Text('Easy'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Handle Medium difficulty selection
+                                },
+                                child: Text('Medium'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Handle Hard difficulty selection
+                                },
+                                child: Text('Hard'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Handle Custom difficulty selection
+                                },
+                                child: Text('Custom'),
+                              ),
+                              SizedBox(height: 16),
+                              Text('Number of bombs:',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(height: 8),
+                              Text('Total bombs: X'),
+                            ],
+                          ),
                         );
                       },
                     );
@@ -373,6 +440,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.grey[700],
                   ),
                 ),
+
                 // Refresh Button
                 GestureDetector(
                   onTap: restartGame,
